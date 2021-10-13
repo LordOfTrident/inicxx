@@ -13,8 +13,8 @@ int main() {
 	 *  which has a constructor from INI::Sections.
 	 *
 	 *  INI::Sections and INI::Section typedefs:
-	 *    typedef std::map<std::string, std::string> Section;
-	 *    typedef std::map<std::string, Section> Sections;
+	 *    typedef std::unordered_map<std::string, std::string> Section;
+	 *    typedef std::unordered_map<std::string, Section> Sections;
 	 */
 	 
 	INI::Structure inis = INI::Sections({
@@ -32,13 +32,13 @@ int main() {
 	 *  The [] operator overload returns the Section (INI::Section)
 	 *  from which you then index the key.
 	 *
-	 *  The INI::Structure::At(string, string) method runs the std::map::at
-	 *  method first on the sections std::map and then the returned 
+	 *  The INI::Structure::At(string, string) method runs the std::unordered_map::at
+	 *  method first on the sections std::unordered_map and then the returned 
 	 *  INI::Section.
 	 *
 	 *  You can also use the overload INI::Structure::At(string), which does
-	 *  the same as the [] operator overload but it uses std::map::at
-	 *  instead of the [] operator on the sections std::map.
+	 *  the same as the [] operator overload but it uses std::unordered_map::at
+	 *  instead of the [] operator on the sections std::unordered_map.
 	 *
 	 *  Use the one you prefer.
 	 */

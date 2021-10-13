@@ -99,7 +99,7 @@ Baz = \" Qux \" ; Set 'Baz' to ' Qux ' \n\
 	std::cout << "Baz=\"" << inis["Fruit"]["Baz"] << "\"" << std::endl;
 
 	/*
-	 *  INI::Structure::Clear() clears the entire sections std::map
+	 *  INI::Structure::Clear() clears the entire sections std::unordered_map
 	 */
 	
 	inis.Clear();

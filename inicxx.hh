@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <cstdint>
 
 #define INI_DEFAULT ""
@@ -29,8 +29,8 @@ typedef size_t  word;
 typedef ssize_t sword;
 
 namespace INI {
-	typedef std::map<std::string, std::string> Section;
-	typedef std::map<std::string, Section> Sections;
+	typedef std::unordered_map<std::string, std::string> Section;
+	typedef std::unordered_map<std::string, Section> Sections;
 
 #ifndef INI_DONT_USE_EXCEPTIONS
 	class Exception {
