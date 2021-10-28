@@ -1,390 +1,425 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <cstdint>
+#include <string> // std::string
+#include <vector> // std::vector
+#include <unordered_map> // std::unordered_map
+#include <cstdint> // std::int8_t, std::int16_t, std::int32_t, std::int64_t,
+                   // std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t,
+#include <cstddef> // std::size_t
 
-#define INI_DEFAULT ""
-
-#ifdef INI_DONT_USE_EXCEPTIONS
-#	define INI_OK    0
-#	define INI_ERROR -1
-#endif
-
-#define __INI_TYPE_NONE    0
-#define __INI_TYPE_SECTION 1
-#define __INI_TYPE_KEY     2
-#define __INI_TYPE_VALUE   3
-
-typedef int8_t  i8;
-typedef int16_t i16;
-typedef int32_t i32;
-
-typedef uint8_t  ui8;
-typedef uint16_t ui16;
-typedef uint32_t ui32;
-
-typedef size_t  word;
-typedef ssize_t sword;
+#define INI_VERSION_MAJOR 1
+#define INI_VERSION_MINOR 2
+#define INI_VERSION_PATCH 1
 
 namespace INI {
+	typedef std::int8_t  i8;
+	typedef std::int16_t i16;
+	typedef std::int32_t i32;
+	typedef std::int64_t i64;
+
+	typedef std::uint8_t  ui8;
+	typedef std::uint16_t ui16;
+	typedef std::uint32_t ui32;
+	typedef std::uint64_t ui64;
+
+	typedef std::size_t word;
+
+	// Typedefs for shorter and readable code
 	typedef std::unordered_map<std::string, std::string> Section;
 	typedef std::unordered_map<std::string, Section> Sections;
 
 #ifndef INI_DONT_USE_EXCEPTIONS
 	class Exception {
 		public:
-			Exception(const std::string& p_Message): 
-				m_Message(p_Message) 
+			Exception(const std::string &p_message):
+				m_message(p_message)
 			{};
-			
+
 			~Exception() {};
 
 			const std::string& What() const {
-				return m_Message;
+				return m_message;
 			};
-			
+
 		private:
-			std::string m_Message;
-	};
-	
+			std::string m_message;
+	}; // class Exception
+
 	class ParserException: public Exception {
 		public:
-			ParserException(const std::string& p_Message, word p_Line): 
-				Exception(p_Message),
-				m_Line(p_Line)
+			ParserException(const std::string &p_message, word p_line):
+				Exception(p_message),
+				m_line(p_line)
 			{};
-			
+
 			~ParserException() {};
-			
+
 			word Line() const {
-				return m_Line;
+				return m_line;
 			};
-		
+
 		private:
-			word m_Line;
-	};
-#endif
+			word m_line;
+	}; // class ParserException
+#endif // INI_DONT_USE_EXCEPTIONS
 
 	class Structure {
 		public:
+			// Constants for defaults
+			static constexpr const char DefaultSection[1] = "";
+
+#ifdef INI_DONT_USE_EXCEPTION
+			// Constants for exitcodes
+			static constexpr const i8 Ok = 0;
+			static constexpr const i8 Error = -1;
+#endif // INI_DONT_USE_EXCEPTION
+
 #ifdef INI_DONT_USE_EXCEPTIONS
 			Structure():
-				m_ErrorMessage(""),
-				m_Line(0)
+				m_errorMessage(""),
+				m_line(0)
 			{};
-#else
+#else // not INI_DONT_USE_EXCEPTIONS
 			Structure() {};
-#endif
+#endif // INI_DONT_USE_EXCEPTIONS
 
 			~Structure() {};
-			
+
 #ifdef INI_DONT_USE_EXCEPTIONS
-			Structure(const Sections& p_Sects):
-				m_ErrorMessage(""),
-				m_Line(0)
-#else
-			Structure(const Sections& p_Sects)
-#endif
+			Structure(const Sections &p_sections):
+				m_errorMessage(""),
+				m_line(0)
+#else // not INI_DONT_USE_EXCEPTIONS
+			Structure(const Sections &p_sections)
+#endif // INI_DONT_USE_EXCEPTIONS
 			{
-				m_Sects = p_Sects;
+				m_sections = p_sections;
 			};
-			
-			Structure& operator=(const Structure& p_Structure) {
-				m_Sects = p_Structure.m_Sects;
-				
+
+			Structure& operator=(const Structure &p_structure) {
+				m_sections = p_structure.m_sections;
+
 				return *this;
 			};
 
-			Section& operator[](const std::string& p_Idx) {
-				return m_Sects[p_Idx];
-			};
-			
-			Section& At(const std::string& p_Idx) {
-				return m_Sects.at(p_Idx);
-			};
-			
-			std::string& At(const std::string& p_IdxA, const std::string& p_IdxB) {
-				return m_Sects.at(p_IdxA).at(p_IdxB);
+			// Index functions
+			Section& operator[](const std::string &p_idx) {
+				return m_sections[p_idx];
 			};
 
-			bool Contains(const std::string& p_Idx) const {
-				return m_Sects.count(p_Idx);
+			Section& At(const std::string &p_idx) {
+				return m_sections.at(p_idx);
 			};
-			
-			bool Contains(const std::string& p_IdxA, const std::string& p_IdxB) const {
-				if (m_Sects.count(p_IdxA))
-					if (m_Sects.at(p_IdxA).count(p_IdxB))
+
+			std::string& At(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) {
+				return m_sections.at(p_idxA).at(p_idxB);
+			};
+
+			bool Contains(const std::string &p_idx) const {
+				return m_sections.count(p_idx);
+			};
+
+			bool Contains(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) const {
+				if (m_sections.count(p_idxA))
+					if (m_sections.at(p_idxA).count(p_idxB))
 						return true;
 
 				return false;
 			};
 
 			void Clear() {
-				m_Sects.clear();
-			};
-			
-			void Clear(const std::string& p_Idx) {
-				m_Sects[p_Idx].clear();
+				m_sections.clear();
 			};
 
-			double AsNumber(const std::string& p_IdxA, const std::string& p_IdxB) {
-				return std::stod(m_Sects[p_IdxA][p_IdxB]);
+			void Clear(const std::string &p_idx) {
+				m_sections[p_idx].clear();
 			};
-			
-			sword AsInteger(const std::string& p_IdxA, const std::string& p_IdxB) {
-				return std::stol(m_Sects[p_IdxA][p_IdxB]);
+
+			// Conversion functions
+			double AsNumber(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) {
+				return std::stod(m_sections[p_idxA][p_idxB]);
 			};
-			
-			std::string AsString(const std::string& p_IdxA, const std::string& p_IdxB) {
-				return m_Sects[p_IdxA][p_IdxB];
+
+			long AsInteger(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) {
+				return std::stol(m_sections[p_idxA][p_idxB]);
+			};
+
+			std::string AsString(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) {
+				return m_sections[p_idxA][p_idxB];
 			};
 
 #ifdef INI_DONT_USE_EXCEPTIONS
-			i8 AsBoolean(const std::string& p_IdxA, const std::string& p_IdxB) {
-#else
-			bool AsBoolean(const std::string& p_IdxA, const std::string& p_IdxB) {
-#endif
-				const std::string& Val = m_Sects[p_IdxA][p_IdxB];
+			i8 AsBoolean(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) {
+#else // not INI_DONT_USE_EXCEPTIONS
+			bool AsBoolean(
+				const std::string &p_idxA,
+				const std::string &p_idxB
+			) {
+#endif // INI_DONT_USE_EXCEPTIONS
+				const std::string &val = m_sections[p_idxA][p_idxB];
 
-				if (Val == "true")
+				if (val == "true")
 					return true;
-				else if (Val == "false")
+				else if (val == "false")
 					return false;
 
 #ifdef INI_DONT_USE_EXCEPTIONS
-				m_ErrorMessage = "Attempt to use ASBoolean() on a non-boolean value";
-				
-				return INI_ERROR;
-#else
+				m_errorMessage = "Attempt to use ASBoolean() on a non-boolean value";
+
+				return Error;
+#else // not INI_DONT_USE_EXCEPTIONS
 				throw Exception("Attempt to use AsBoolean() on a non-boolean value");
 #endif
 			};
 
 #ifdef INI_DONT_USE_EXCEPTIONS
-			const std::string& GetErrorMessage() const {
-				return m_ErrorMessage;
+			const std::string &GetErrorMessage() const {
+				return m_errorMessage;
 			};
 
 			word GetErrorLine() const {
-				return m_Line;
+				return m_line;
 			};
-#endif
+#endif // INI_DONT_USE_EXCEPTIONS
 
 			std::string Stringify() const {
-				std::string Stringified = "";
+				std::string stringified = "";
 
-				for (const std::pair<const std::string&, const Section&>& Sect : m_Sects) {
-					if (Sect.first[0] == ' ' and Sect.first.back() == ' ')
-						Stringified += "[\"" + INIEscape(Sect.first) + "\"]\n";
+				for (const std::pair<
+						const std::string&,
+						const Section&
+					> &sect : m_sections
+				) {
+					if (sect.first[0] == ' ' and sect.first.back() == ' ')
+						stringified += "[\"" + INIEscape(sect.first) + "\"]\n";
 					else
-						Stringified += "[" + INIEscape(Sect.first) + "]\n";
-					
-					for (const std::pair<const std::string&, const std::string&> &Val : Sect.second) {
-						if (Val.first[0] == ' ' and Val.first.back() == ' ')
-							Stringified += "\"" + INIEscape(Val.first) + "\"";
-						else
-							Stringified += INIEscape(Val.first);
+						stringified += "[" + INIEscape(sect.first) + "]\n";
 
-						Stringified += "=";
-
-						if (Val.second[0] == ' ' and Val.second.back() == ' ')
-							Stringified += "\"" + INIEscape(Val.second) + "\"\n";
+					for (const std::pair<const std::string&, const std::string&> &val : sect.second) {
+						if (val.first[0] == ' ' and val.first.back() == ' ')
+							stringified += "\"" + INIEscape(val.first) + "\"";
 						else
-							Stringified += INIEscape(Val.second) + "\n";
+							stringified += INIEscape(val.first);
+
+						stringified += "=";
+
+						if (val.second[0] == ' ' and val.second.back() == ' ')
+							stringified += "\"" + INIEscape(val.second) + "\"\n";
+						else
+							stringified += INIEscape(val.second) + "\n";
 					};
 				};
-				
-				return Stringified;
+
+				return stringified;
 			};
 
 #ifdef INI_DONT_USE_EXCEPTIONS
-			ui8 Parse(const std::string& p_Text) {
-#else
-			void Parse(const std::string& p_Text) {
-#endif
+			ui8 Parse(const std::string &p_text) {
+#else // not INI_DONT_USE_EXCEPTIONS
+			void Parse(const std::string &p_text) {
+#endif // INI_DONT_USE_EXCEPTIONS
 				Clear();
-				
-				std::string Line = "";
-				std::string CurrentSect = INI_DEFAULT;
-				word CurrentLine = 0;
 
-				for (const char &ch : p_Text + "\n") {
+				std::string line = "";
+				std::string currentSection = DefaultSection;
+				word currentLine = 0;
+
+				for (const char &ch : p_text + "\n") {
 					switch (ch) {
-						case '\n': {
-							++ CurrentLine;
-							Trim(Line);
-							
-							switch (Line[0]) {
-								case ';': case '#': break;
+					case '\n': {
+							++ currentLine;
+							Trim(line);
 
-								case '[': {
-									word Pos = Line.find_first_of("]");
+							switch (line[0]) {
+							// Comment
+							case ';': case '#': break;
 
-									if (Pos == std::string::npos) {									
+							// Sections
+							case '[': {
+									word pos = line.find_first_of("]");
+
+									if (pos == std::string::npos) {
 #ifdef INI_DONT_USE_EXCEPTIONS
-										m_ErrorMessage = "Sector name closing expected";
-										
-										return INI_ERROR;
-#else
-										throw ParserException("Sector name closing expected", CurrentLine);	
-#endif
+										m_errorMessage = "Sector name closing expected";
+
+										return Error;
+#else // not INI_DONT_USE_EXCEPTIONS
+										throw ParserException("Sector name closing expected", currentLine);
+#endif // INI_DONT_USE_EXCEPTIONS
 									};
-									
-									CurrentSect = Line.substr(1, Pos - 1);
-									Trim(CurrentSect);
-									CheckApostrophes(CurrentSect);
-									
-									break;	
+
+									currentSection = line.substr(1, pos - 1);
+									Trim(currentSection);
+									RemoveApostrophes(currentSection);
 								};
-								
-								default: {
-									if (Line == "")
+
+								break;
+
+							// Assignment
+							default: {
+									if (line == "")
 										break;
 
-									word Pos = 0;
+									word pos = 0;
 
 									do {
-										Pos = Line.find_first_of("=", Pos + 1);
-										
-										if (Pos == std::string::npos) {									
+										pos = line.find_first_of("=", pos + 1);
+
+										if (pos == std::string::npos) {
 #ifdef INI_DONT_USE_EXCEPTIONS
-											m_ErrorMessage = "Expected assignment";
-											
-											return INI_ERROR;
-#else
-											throw ParserException("Expected assignment", CurrentLine);	
-#endif
+											m_errorMessage = "Expected assignment";
+
+											return Error;
+#else // not INI_DONT_USE_EXCEPTIONS
+											throw ParserException("Expected assignment", currentLine);
+#endif // INI_DONT_USE_EXCEPTIONS
 										};
-									} while (Line[Pos - 1] == '\\');
-									
-									std::string Key = Line.substr(0, Pos);
-									std::string Value = "";
-									Line = Line.substr(Pos + 1);
+									} while (line[pos - 1] == '\\');
 
-									if (INIUnescape(std::string(Key), Key)) {
-#ifdef INI_DONT_USE_EXCEPTIONS
-										m_ErrorMessage = "Expected assignment";
-										
-										return INI_ERROR;
-#else
-										throw ParserException("Expected assignment", CurrentLine);	
-#endif
-									};
-									
-									INIUnescape(Line, Value);
+									std::string key = line.substr(0, pos);
+									std::string value = "";
+									line = line.substr(pos + 1);
 
-									Trim(Key); Trim(Value);
-									CheckApostrophes(Key); CheckApostrophes(Value);
-									
-									if (Key == "") {
+									if (INIUnescape(std::string(key), key)) {
 #ifdef INI_DONT_USE_EXCEPTIONS
-										m_ErrorMessage = "Key name expected";
-										
-										return INI_ERROR;
-#else
-										throw ParserException("Key name expected", CurrentLine);	
-#endif
+										m_errorMessage = "Expected assignment";
+
+										return Error;
+#else // not INI_DONT_USE_EXCEPTIONS
+										throw ParserException("Expected assignment", currentLine);
+#endif // INI_DONT_USE_EXCEPTIONS
 									};
 
-									m_Sects[CurrentSect][Key] = Value;
-			
-									break;
+									INIUnescape(line, value);
+
+									Trim(key); Trim(value);
+									RemoveApostrophes(key); RemoveApostrophes(value);
+
+									if (key == "") {
+#ifdef INI_DONT_USE_EXCEPTIONS
+										m_errorMessage = "Key name expected";
+
+										return Error;
+#else // not INI_DONT_USE_EXCEPTIONS
+										throw ParserException("Key name expected", currentLine);
+#endif // INI_DONT_USE_EXCEPTIONS
+									};
+
+									m_sections[currentSection][key] = value;
 								};
+
+								break;
 							};
 
-							Line = "";
-
-							break;
+							line = "";
 						};
-						
-						default: Line += ch; break;
+
+						break;
+
+					default: line += ch; break;
 					};
 				};
 
 #ifdef INI_DONT_USE_EXCEPTIONS
-				return INI_OK;
-#endif
+				return Ok;
+#endif // INI_DONT_USE_EXCEPTIONS
 			};
 
 		private:
-			void Trim(std::string &p_Str) { 
-				word Start = p_Str.find_first_not_of(" \t");
-				
-				if (Start == std::string::npos) {
-					p_Str = "";
+			void Trim(std::string &p_str) {
+				word start = p_str.find_first_not_of(" \t");
+
+				if (start == std::string::npos) {
+					p_str = "";
 
 					return;
 				};
-				
-				word End = p_Str.find_last_not_of(" \t");
 
-				p_Str = p_Str.substr(Start, End + 1 - Start);
+				word end = p_str.find_last_not_of(" \t");
+
+				p_str = p_str.substr(start, end + 1 - start);
 			};
 
-			void CheckApostrophes(std::string &p_Str) {
-				if (p_Str[0] == '"' and p_Str.back() == '"')
-					p_Str = p_Str.substr(1, p_Str.length() - 2);
+			void RemoveApostrophes(std::string &p_str) {
+				if (p_str[0] == '"' and p_str.back() == '"')
+					p_str = p_str.substr(1, p_str.length() - 2);
 			};
-			
-			std::string INIEscape(const std::string &p_Str) const {
-				std::string Escaped = "";
 
-				for (word i = 0; i < p_Str.length(); ++ i)
-					switch (p_Str[i]) {
-						case '\n': Escaped += "\\n"; break;
-						case '\r': Escaped += "\\r"; break;
-						case '\t': Escaped += "\\t"; break;
-						case '\f': Escaped += "\\f"; break;
-						case '\b': Escaped += "\\b"; break;
-						case '\a': Escaped += "\\a"; break;
-						case '\0': Escaped += "\\0"; break;
-						case '"': Escaped += "\\\""; break;
+			std::string INIEscape(const std::string &p_str) const {
+				std::string escaped = "";
 
-						default: Escaped += p_Str[i]; break;
+				for (word i = 0; i < p_str.length(); ++ i)
+					switch (p_str[i]) {
+					case '\n': escaped += "\\n"; break;
+					case '\r': escaped += "\\r"; break;
+					case '\t': escaped += "\\t"; break;
+					case '\f': escaped += "\\f"; break;
+					case '\b': escaped += "\\b"; break;
+					case '\a': escaped += "\\a"; break;
+					case '\0': escaped += "\\0"; break;
+					case '"': escaped += "\\\""; break;
+
+					default: escaped += p_str[i]; break;
 					};
 
-				return Escaped;
+				return escaped;
 			};
 
-			bool INIUnescape(const std::string &p_Line, std::string &p_Str) {
-				bool Escape = false;
-				p_Str = "";
-				
-				for (const char &ch : p_Line) {
-					if (Escape) {
-						Escape = false;
-						
+			bool INIUnescape(const std::string &p_line, std::string &p_str) {
+				bool escape = false;
+				p_str = "";
+
+				for (const char &ch : p_line) {
+					if (escape) {
+						escape = false;
+
 						switch (ch) {
-							case 'n':  p_Str += '\n'; break;
-							case 'r':  p_Str += '\r'; break;
-							case 't':  p_Str += '\t'; break;
-							case 'f':  p_Str += '\f'; break;
-							case 'b':  p_Str += '\b'; break;
-							case 'a':  p_Str += '\a'; break;
-							case '0':  p_Str += '\0'; break;
-							case '"':  p_Str += '\"'; break;
-							case '\\': p_Str += '\\'; break;
-							case ';':  p_Str += ';';  break;
+						case 'n':  p_str += '\n'; break;
+						case 'r':  p_str += '\r'; break;
+						case 't':  p_str += '\t'; break;
+						case 'f':  p_str += '\f'; break;
+						case 'b':  p_str += '\b'; break;
+						case 'a':  p_str += '\a'; break;
+						case '0':  p_str += '\0'; break;
+						case '"':  p_str += '\"'; break;
+						case '\\': p_str += '\\'; break;
+						case ';':  p_str += ';';  break;
 						};
 					};
 
 					switch (ch) {
-						case ';': case '#': return true;
-						case '\\': Escape = true; break;
-						default: p_Str += ch; break;
+					case ';': case '#': return true;
+					case '\\': escape = true; break;
+					default: p_str += ch; break;
 					};
 				};
 
 				return false;
 			};
 
-			Sections m_Sects;
+			Sections m_sections;
 
 #ifdef INI_DONT_USE_EXCEPTIONS
-			std::string m_ErrorMessage;
-			word m_Line;
-#endif
-	};
-};
+			std::string m_errorMessage;
+			word m_line;
+#endif // INI_DONT_USE_EXCEPTIONS
+	}; // class Structure
+}; // namespace INI

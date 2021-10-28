@@ -15,10 +15,14 @@ int main() {
 	 *  INI::Sections and INI::Section typedefs:
 	 *    typedef std::unordered_map<std::string, std::string> Section;
 	 *    typedef std::unordered_map<std::string, Section> Sections;
+	 *
+	 *  INI::Structure::DefaultSection is the default section to which
+	 *  all variables that arent under a section are put in. It is
+	 *  equal to "".
 	 */
-	 
+
 	INI::Structure inis = INI::Sections({
-		{INI_DEFAULT, INI::Section({
+		{INI::Structure::DefaultSection, INI::Section({
 			{"Food", "Bar"}
 		})},
 
@@ -33,7 +37,7 @@ int main() {
 	 *  from which you then index the key.
 	 *
 	 *  The INI::Structure::At(string, string) method runs the std::unordered_map::at
-	 *  method first on the sections std::unordered_map and then the returned 
+	 *  method first on the sections std::unordered_map and then the returned
 	 *  INI::Section.
 	 *
 	 *  You can also use the overload INI::Structure::At(string), which does
@@ -42,7 +46,7 @@ int main() {
 	 *
 	 *  Use the one you prefer.
 	 */
-	 
+
 	inis["Fruit"]["Baz"] = " Qux ";
 	inis.At("Fruit", "Foobar") = "\"Fred\"";
 

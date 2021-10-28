@@ -56,15 +56,16 @@ int main() {
 		std::cout << "Foo = " << inis.AsBoolean("Fruit", "Foo") << std::endl;
 
 	/*
-	 *  INI::Structure::AsBoolean() throws an exception of the 
-	 *  class INI::Exception which holds one piece of information: 
-	 *  the error message. You can get it using the 
+	 *  INI::Structure::AsBoolean() throws an exception of the
+	 *  class INI::Exception which holds one piece of information:
+	 *  the error message. You can get it using the
 	 *  INI::Exception::What method.
 	 */
 
-	} catch (const INI::Exception& Error) {
-		std::cout << "Error while converting 'Foo' value to a boolean: "
-			<< Error.What() << std::endl;
+	} catch (const INI::Exception &error) {
+		std::cerr
+			<< "Error while converting 'Foo' value to a boolean: "
+			<< error.What() << std::endl;
 
 		return 0;
 	};

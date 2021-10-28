@@ -62,10 +62,11 @@ Baz = \" Qux \" ; Set 'Baz' to ' Qux ' \n\
 	 *  and INI::ParserException::What methods.
 	 */
 
-	} catch (const INI::ParserException& Error) {
-		std::cout << "Error while parsing on the line " 
-			<< Error.Line() << ": " 
-			<< Error.What() << std::endl;
+	} catch (const INI::ParserException &error) {
+		std::cerr
+			<< "Error while parsing on the line "
+			<< error.Line() << ": "
+			<< error.What() << std::endl;
 
 		return 0;
 	};
@@ -81,13 +82,13 @@ Baz = \" Qux \" ; Set 'Baz' to ' Qux ' \n\
 	 */
 
 	if (not inis.Contains("Fruit")) {
-		std::cout << "Section 'Fruit' is missing!" << std::endl;
+		std::cerr << "Section 'Fruit' is missing!" << std::endl;
 
 		return 0;
 	};
 
 	if (not inis.Contains("Fruit", "Baz")) {
-		std::cout << "Key 'Baz' from section 'Fruit' is missing!" << std::endl;
+		std::cerr << "Key 'Baz' from section 'Fruit' is missing!" << std::endl;
 
 		return 0;
 	};
@@ -101,7 +102,7 @@ Baz = \" Qux \" ; Set 'Baz' to ' Qux ' \n\
 	/*
 	 *  INI::Structure::Clear() clears the entire sections std::unordered_map
 	 */
-	
+
 	inis.Clear();
 
 	return 0;
