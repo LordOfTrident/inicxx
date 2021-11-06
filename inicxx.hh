@@ -1,3 +1,15 @@
+/*
+ *  inicxx - A C++ INI file parser and writer
+ *  Version 1.2.1
+ *  Github: https://github.com/LordOfTrident/inicxx
+ *
+ *  Examples under examples/ folder, read README.md on
+ *  how to compile them
+ *
+ *  define INI_DONT_USE_EXCEPTIONS symbol for the library to
+ *  use return codes instead of exceptions
+ */
+
 #pragma once
 
 #include <string> // std::string
@@ -47,7 +59,10 @@ namespace INI {
 
 	class ParserException: public Exception {
 		public:
-			ParserException(const std::string &p_message, word p_line):
+			ParserException(
+				const std::string &p_message,
+				word p_line
+			):
 				Exception(p_message),
 				m_line(p_line)
 			{};
@@ -66,7 +81,8 @@ namespace INI {
 	class Structure {
 		public:
 			// Constants for defaults
-			static constexpr const char DefaultSection[1] = "";
+			static constexpr const char
+				DefaultSection[1] = "";
 
 #ifdef INI_DONT_USE_EXCEPTION
 			// Constants for exitcodes
@@ -213,7 +229,12 @@ namespace INI {
 					else
 						stringified += "[" + INIEscape(sect.first) + "]\n";
 
-					for (const std::pair<const std::string&, const std::string&> &val : sect.second) {
+					for (
+						const std::pair<
+							const std::string&, const std::string&
+						> &val :
+						sect.second
+					) {
 						if (val.first[0] == ' ' and val.first.back() == ' ')
 							stringified += "\"" + INIEscape(val.first) + "\"";
 						else
@@ -262,7 +283,10 @@ namespace INI {
 
 										return Error;
 #else // not INI_DONT_USE_EXCEPTIONS
-										throw ParserException("Sector name closing expected", currentLine);
+										throw ParserException(
+											"Sector name closing expected",
+											currentLine
+										);
 #endif // INI_DONT_USE_EXCEPTIONS
 									};
 
@@ -289,7 +313,10 @@ namespace INI {
 
 											return Error;
 #else // not INI_DONT_USE_EXCEPTIONS
-											throw ParserException("Expected assignment", currentLine);
+											throw ParserException(
+												"Expected assignment",
+												currentLine
+											);
 #endif // INI_DONT_USE_EXCEPTIONS
 										};
 									} while (line[pos - 1] == '\\');
@@ -304,14 +331,18 @@ namespace INI {
 
 										return Error;
 #else // not INI_DONT_USE_EXCEPTIONS
-										throw ParserException("Expected assignment", currentLine);
+										throw ParserException(
+											"Expected assignment",
+											currentLine
+										);
 #endif // INI_DONT_USE_EXCEPTIONS
 									};
 
 									INIUnescape(line, value);
 
 									Trim(key); Trim(value);
-									RemoveApostrophes(key); RemoveApostrophes(value);
+									RemoveApostrophes(key);
+									RemoveApostrophes(value);
 
 									if (key == "") {
 #ifdef INI_DONT_USE_EXCEPTIONS
@@ -319,7 +350,10 @@ namespace INI {
 
 										return Error;
 #else // not INI_DONT_USE_EXCEPTIONS
-										throw ParserException("Key name expected", currentLine);
+										throw ParserException(
+											"Key name expected",
+											currentLine
+										);
 #endif // INI_DONT_USE_EXCEPTIONS
 									};
 
@@ -383,7 +417,10 @@ namespace INI {
 				return escaped;
 			};
 
-			bool INIUnescape(const std::string &p_line, std::string &p_str) {
+			bool INIUnescape(
+				const std::string &p_line,
+				std::string &p_str
+			) {
 				bool escape = false;
 				p_str = "";
 
@@ -415,11 +452,11 @@ namespace INI {
 				return false;
 			};
 
-			Sections m_sections;
-
 #ifdef INI_DONT_USE_EXCEPTIONS
 			std::string m_errorMessage;
 			word m_line;
 #endif // INI_DONT_USE_EXCEPTIONS
+
+			Sections m_sections;
 	}; // class Structure
 }; // namespace INI

@@ -24,8 +24,12 @@ CXX_FLAGS = \
 	-I./\
 
 ifeq (${OS}, Windows_NT)
+	N_WRITING += .exe
+	N_READING += .exe
+	N_CONVERSION += .exe
+
 	CREATE_BIN_DIRECTORY = if not exist "./bin" mkdir ${D_BIN}
-	CLEAN = del ${N_WRITING}.exe && del ${N_READING}.exe && del ${N_CONVERSION}.exe
+	CLEAN = del ${N_WRITING} && del ${N_READING} && del ${N_CONVERSION}
 else
 	CREATE_BIN_DIRECTORY = mkdir -p ./bin
 	CLEAN = rm ${N_WRITING} && rm ${N_READING} && rm ${N_CONVERSION}
