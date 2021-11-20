@@ -6,22 +6,9 @@
 #include <inicxx.hh>
 
 int main() {
-
-	/*
-	 *  Using the typedef of INI::Sections to let the compiler know
-	 *  what is it that we are assigning to the INI::Structure,
-	 *  which has a constructor from INI::Sections.
-	 *
-	 *  INI::Sections and INI::Section typedefs:
-	 *    typedef std::unordered_map<std::string, std::string> Section;
-	 *    typedef std::unordered_map<std::string, Section> Sections;
-	 *
-	 *  INI::Structure::DefaultSection is the default section to which
-	 *  all variables that arent under a section are put in. It is
-	 *  equal to "".
-	 */
-
-	INI::Structure inis = INI::Sections({
+	// INI supports more than just char strings, but
+	// we want to use a char one
+	INI::Structure<char> inis = INI::Sections({
 		{INI::Structure::DefaultSection, INI::Section({
 			{"Food", "Bar"}
 		})},
@@ -32,31 +19,12 @@ int main() {
 		})}
 	});
 
-	/*
-	 *  The [] operator overload returns the Section (INI::Section)
-	 *  from which you then index the key.
-	 *
-	 *  The INI::Structure::At(string, string) method runs the std::unordered_map::at
-	 *  method first on the sections std::unordered_map and then the returned
-	 *  INI::Section.
-	 *
-	 *  You can also use the overload INI::Structure::At(string), which does
-	 *  the same as the [] operator overload but it uses std::unordered_map::at
-	 *  instead of the [] operator on the sections std::unordered_map.
-	 *
-	 *  Use the one you prefer.
-	 */
+	inis["Fruit"]["Baz"] = " Qux "; // [] operator returns INI::Section&
+	inis.At("Fruit", "Foobar") = "\"Fred\""; // At(string, string) returns string&
 
-	inis["Fruit"]["Baz"] = " Qux ";
-	inis.At("Fruit", "Foobar") = "\"Fred\"";
-
-	/*
-	 *  The INI::Structure::Stringify() method generates an INI text from
-	 *  the structure, but it generates '[]' as the default section; be
-	 *  aware of that!
-	 */
-
-	std::cout << inis.Stringify() << std::endl;
+	std::cout
+		<< inis.Stringify()
+		<< std::endl;
 
 	return 0;
 };

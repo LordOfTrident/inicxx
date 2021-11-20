@@ -54,7 +54,7 @@ compile: ${F_ALL}
 clean:
 	@echo Cleaning...
 	@${CLEAN}
-	@echo Cleaned succesfully...
+	@echo Cleaned successfully
 
 all:
 	@echo compile - Compiles the source
