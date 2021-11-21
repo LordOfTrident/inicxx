@@ -1,6 +1,6 @@
 /*
  *  inicxx - A C++ INI file parser and writer
- *  Version 1.2.1
+ *  Version 1.2.3
  *  Github: https://github.com/LordOfTrident/inicxx
  *
  *  Examples under examples/ folder, read README.md on
