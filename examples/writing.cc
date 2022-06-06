@@ -9,7 +9,7 @@ int main() {
 	// INI supports more than just char strings, but
 	// we want to use a char one
 	INI::Structure<char> inis = INI::Sections({
-		{INI::Structure::DefaultSection, INI::Section({
+		{INI::DefaultSection, INI::Section({
 			{"Food", "Bar"}
 		})},
 

@@ -1,5 +1,6 @@
 <p align="center">
 	<img width="100px" src="assets/logo_plain.png"/>
+	<hr>
 	<p align="center">A simple, single-header INI file parser library for C++</p>
 </p>
 <p align="center">

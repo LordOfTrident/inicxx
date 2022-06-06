@@ -1,6 +1,6 @@
 /*
  *  inicxx - A C++ INI file parser and writer
- *  Version 1.2.3
+ *  Version 1.2.4
  *  Github: https://github.com/LordOfTrident/inicxx
  *
  *  Examples under examples/ folder, read README.md on
@@ -18,7 +18,7 @@
 
 #define INI_VERSION_MAJOR 1
 #define INI_VERSION_MINOR 2
-#define INI_VERSION_PATCH 3
+#define INI_VERSION_PATCH 4
 
 namespace INI {
 	// Type aliases for shorter and readable code
@@ -37,52 +37,51 @@ namespace INI {
 	using Section  = std::unordered_map<std::string, std::string>;
 	using Sections = std::unordered_map<std::string, Section>;
 
+	// Constants for defaults
+	constexpr char DefaultSection[1] = "";
+
 	class Exception {
-		public:
-			Exception(const std::string &p_message):
-				m_message(p_message)
-			{};
+	public:
+		Exception(const std::string &p_message):
+			m_message(p_message)
+		{};
 
-			~Exception() {};
+		~Exception() {};
 
-			const std::string& What() const {
-				return m_message;
-			};
+		const std::string& What() const {
+			return m_message;
+		};
 
-		protected:
-			std::string m_message;
+	protected:
+		std::string m_message;
 	}; // class Exception
 
 	class ParserException: public Exception {
-		public:
-			ParserException(
-				const std::string &p_message,
-				usize p_line
-			):
-				Exception(p_message),
-				m_line(p_line)
-			{};
+	public:
+		ParserException(
+			const std::string &p_message,
+			usize p_line
+		):
+			Exception(p_message),
+			m_line(p_line)
+		{};
 
-			~ParserException() {};
+		~ParserException() {};
 
-			usize Line() const {
-				return m_line;
-			};
+		usize Line() const {
+			return m_line;
+		};
 
-		protected:
-			usize m_line;
+	protected:
+		usize m_line;
 	}; // class ParserException
 
 	template <class CharT>
 	class Structure {
 	private:
-		using string = std:basic_string<CharT>;
+		using string = std::basic_string<CharT>;
 
 	public:
-		// Constants for defaults
-		static constexpr const char
-			DefaultSection[1] = "";
-
 		Structure() {};
 
 		Structure(const Sections &p_sections) {
@@ -106,10 +105,7 @@ namespace INI {
 			return m_sections.at(p_idx);
 		};
 
-		string& At(
-			const string &p_idxA,
-			const string &p_idxB
-		) {
+		string& At(const string &p_idxA, const string &p_idxB) {
 			return m_sections.at(p_idxA).at(p_idxB);
 		};
 
@@ -117,10 +113,7 @@ namespace INI {
 			return m_sections.count(p_idx);
 		};
 
-		bool Contains(
-			const string &p_idxA,
-			const string &p_idxB
-		) const {
+		bool Contains(const string &p_idxA, const string &p_idxB) const {
 			if (m_sections.count(p_idxA))
 				if (m_sections.at(p_idxA).count(p_idxB))
 					return true;
@@ -137,31 +130,19 @@ namespace INI {
 		};
 
 		// Conversion functions
-		double AsNumber(
-			const string &p_idxA,
-			const string &p_idxB
-		) {
+		double AsNumber(const string &p_idxA, const string &p_idxB) {
 			return std::stod(m_sections[p_idxA][p_idxB]);
 		};
 
-		long AsInteger(
-			const string &p_idxA,
-			const string &p_idxB
-		) {
+		long AsInteger(const string &p_idxA, const string &p_idxB) {
 			return std::stol(m_sections[p_idxA][p_idxB]);
 		};
 
-		string AsString(
-			const string &p_idxA,
-			const string &p_idxB
-		) {
+		string AsString(const string &p_idxA, const string &p_idxB) {
 			return m_sections[p_idxA][p_idxB];
 		};
 
-		bool AsBoolean(
-			const string &p_idxA,
-			const string &p_idxB
-		) {
+		bool AsBoolean(const string &p_idxA, const string &p_idxB) {
 			const string &val = m_sections[p_idxA][p_idxB];
 
 			if (val == "true")

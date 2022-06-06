@@ -8,3 +8,4 @@ All the versions and the changes they bring
 - `1.2.1`: New logo
 - `1.2.2`: Added more comments to inicxx.hh
 - `1.2.3`: Removed no exceptions support (its only causing problems and bad code)
+- `1.2.4`: Error fixes, DefaultSection moved to INI namespace
